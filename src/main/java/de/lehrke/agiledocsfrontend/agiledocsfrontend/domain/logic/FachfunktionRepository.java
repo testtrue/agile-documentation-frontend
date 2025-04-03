@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface FachfunktionRepository {
 
     int findLastIdByProjectId(String projectId);
-    Fachfunktion save(Fachfunktion fachfunktion);
+    Fachfunktion saveFachfunktion(Fachfunktion fachfunktion);
 
     Optional<Fachfunktion> findFachfunktionById(FachfunktionId id);
 

@@ -49,7 +49,7 @@ public class Workflow {
             return Results.failure("Ohne Beschreibung kann nicht gespeichert");
         }
 
-        this.fachfunktionRepository.save(fachfunktion);
+        this.fachfunktionRepository.saveFachfunktion(fachfunktion);
 
         return Results.success(fachfunktion);
     }
@@ -86,7 +86,7 @@ public class Workflow {
             fachfunktion.setName(fachfunktionUpdateCommand.name());
         }
 
-        this.fachfunktionRepository.save(fachfunktion);
+        this.fachfunktionRepository.saveFachfunktion(fachfunktion);
         return Results.success(fachfunktion);
     }
 

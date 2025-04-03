@@ -2,20 +2,27 @@ package de.lehrke.agiledocsfrontend.agiledocsfrontend.persistence.jpa;
 
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Fachfunktion;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.FachfunktionId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-public class FachfunktionDbo extends Fachfunktion {
+@Getter
+@Setter
+public class FachfunktionDbo {
 
     @Id
-    public String getPrimaryKey() {
-        return super.getId().id();
-    }
+    private String id;
 
-    public void setPrimaryKey(String primaryKey) {
-        super.setId(new FachfunktionId(primaryKey));
-    }
+    @Convert(converter = FachfunktionConverter.class)
+    private Fachfunktion fachfunktion;
 
+
+    public static FachfunktionDbo toDbo(Fachfunktion fachfunktion) {
+        FachfunktionDbo dbo = new FachfunktionDbo();
+        dbo.setId(fachfunktion.getId().id());
+        dbo.setFachfunktion(fachfunktion);
+        return dbo;
+    }
 
 }
