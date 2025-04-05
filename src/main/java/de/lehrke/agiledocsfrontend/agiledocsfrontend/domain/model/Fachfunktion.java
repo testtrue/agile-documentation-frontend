@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Fachfunktion {
     private FachfunktionId id;
+    private Projekt projekt;
     private String name;
     private String beschreibung;
     private List<Akzeptanzkriterium> akzeptanzkriterien;

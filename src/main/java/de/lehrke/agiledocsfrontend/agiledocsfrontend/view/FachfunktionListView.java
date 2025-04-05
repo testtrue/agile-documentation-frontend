@@ -9,7 +9,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
@@ -28,6 +27,7 @@ public class FachfunktionListView extends Main {
         fachfunktionGrid.addColumn(f -> f.getId().id()).setHeader("Id").setSortable(true);
         fachfunktionGrid.addColumn(Fachfunktion::getName).setHeader("Name");
         fachfunktionGrid.addColumn(createStatusComponentRenderer()).setHeader("Tags");
+        fachfunktionGrid.addColumn(createButtonRenderer());
         fachfunktionGrid.setSizeFull();
         fachfunktionGrid.setAllRowsVisible(true);
 
@@ -57,7 +57,14 @@ public class FachfunktionListView extends Main {
 
         HorizontalLayout verticalLayout = new HorizontalLayout();
 
-        verticalLayout.add(searchField);
+        Button newFF = new Button("Neu", new Icon(VaadinIcon.PLUS));
+        newFF.addClickListener(e -> {
+            newFF.getUI().ifPresent(
+                    ui -> ui.navigate(FachfunktionEditorView.class)
+            );
+        });
+
+        verticalLayout.add(searchField, newFF);
 
         this.add(verticalLayout);
         this.add(fachfunktionGrid);
@@ -67,7 +74,7 @@ public class FachfunktionListView extends Main {
         return value.toLowerCase().contains(searchTerm.toLowerCase());
     }
 
-    private static final SerializableBiConsumer<Div, Fachfunktion> statusComponentUpdater = (
+    private static final SerializableBiConsumer<Div, Fachfunktion> tagComponentList = (
             span, fachfunktion) -> {
         fachfunktion.getTags().forEach(t -> {Span s = new Span(t);
             s.getStyle().set("background-color", "lightgray");
@@ -77,6 +84,21 @@ public class FachfunktionListView extends Main {
     };
 
     private static ComponentRenderer<Div, Fachfunktion> createStatusComponentRenderer() {
-        return new ComponentRenderer<>(Div::new, statusComponentUpdater);
+        return new ComponentRenderer<>(Div::new, tagComponentList);
     }
+
+    private static final SerializableBiConsumer<Div, Fachfunktion> editCol = (d, f) -> {
+        Button b = new Button("Edit", new Icon(VaadinIcon.EDIT));
+        b.addClickListener(e -> {
+            b.getUI().ifPresent(
+                    ui -> ui.navigate(FachfunktionEditorView.class, f.getId().id())
+            );
+        });
+        d.add(b);
+    };
+
+    private static ComponentRenderer<Div, Fachfunktion> createButtonRenderer() {
+        return new ComponentRenderer<>(Div::new, editCol);
+    }
+
 }

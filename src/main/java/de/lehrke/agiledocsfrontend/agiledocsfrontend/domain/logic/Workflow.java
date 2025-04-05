@@ -5,9 +5,11 @@ import com.leakyabstractions.result.core.Results;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Akzeptanzkriterium;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Fachfunktion;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.FachfunktionId;
+import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Projekt;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -18,14 +20,19 @@ public class Workflow {
     private final FachfunktionRepository fachfunktionRepository;
 
     public Result<Fachfunktion, String> neueFachfunktion(String projectId) {
-        final FachfunktionId latestId = this.findLatestId(projectId);
-        return Results.success(new Fachfunktion().withId(latestId));
+        final FachfunktionId latestId = this.findLatestId(new Projekt().withId(projectId));
+        return Results.success(new Fachfunktion().withId(latestId).withAkzeptanzkriterien(new ArrayList<>()));
     }
 
-    private FachfunktionId findLatestId(String projectId) {
-        int highestNumer = this.fachfunktionRepository.findLastIdByProjectId(projectId);
+    public Result<Fachfunktion, String> neueFachfunktion(Projekt projectId) {
+        final FachfunktionId latestId = this.findLatestId(projectId);
+        return Results.success(new Fachfunktion().withId(latestId).withAkzeptanzkriterien(new ArrayList<>()));
+    }
 
-        return FachfunktionId.of(projectId, String.valueOf(highestNumer));
+    private FachfunktionId findLatestId(Projekt projectId) {
+        int highestNumer = this.fachfunktionRepository.findLastIdByProjectId(projectId.getId());
+
+        return FachfunktionId.of(projectId.getId(), String.valueOf(highestNumer + 1));
     }
 
     public Result<Fachfunktion, String> speicherNeueFachfunktion(Fachfunktion fachfunktion) {
