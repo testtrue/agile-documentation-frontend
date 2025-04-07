@@ -1,11 +1,16 @@
 package de.lehrke.agiledocsfrontend.agiledocsfrontend.view;
 
+import com.leakyabstractions.result.api.Result;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -17,6 +22,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.Route;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.logic.FachfunktionRepository;
+import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.logic.FachfunktionUpdateCommand;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.logic.Workflow;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Akzeptanzkriterium;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Fachfunktion;
@@ -57,7 +63,7 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
         TextArea beschreibung = new TextArea("Beschreibung");
         beschreibung.setMinRows(4);
         this.akzeptanzkriteriumGrid = new Grid<>(Akzeptanzkriterium.class, false);
-        this.akzeptanzkriteriumGrid.addColumn(new ComponentRenderer<>(
+        Grid.Column<Akzeptanzkriterium> idCol = this.akzeptanzkriteriumGrid.addColumn(new ComponentRenderer<>(
                 Div::new,
                 (d, f) -> {
                     if (ID_PLACEHOLDER.equals(f.getId())) {
@@ -73,17 +79,57 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
                 }
 
         )).setHeader("ID").setAutoWidth(true);
-        this.akzeptanzkriteriumGrid.addColumn(Akzeptanzkriterium::getBeschreibung).setHeader("Beschreibung");
+        Grid.Column<Akzeptanzkriterium> beschreibungCol = this.akzeptanzkriteriumGrid.addColumn(Akzeptanzkriterium::getBeschreibung).setHeader("Beschreibung");
 
         binder = new Binder<>(Fachfunktion.class);
-        binder.setBean(this.fachfunktion);
         binder.forField(name).bind("name");
         binder.forField(beschreibung).bind("beschreibung");
 
-        formLayout.add(this.id, name, beschreibung, this.akzeptanzkriteriumGrid);
 
+        Binder<Akzeptanzkriterium> akzeptanzkriteriumBinder = new Binder<>(Akzeptanzkriterium.class);
+        Editor<Akzeptanzkriterium> akzeptanzkriteriumEditor = this.akzeptanzkriteriumGrid.getEditor();
+        akzeptanzkriteriumEditor.setBinder(akzeptanzkriteriumBinder);
+        akzeptanzkriteriumEditor.setBuffered(true);
+        TextField akzeptanzkriteriumId = new TextField();
+        akzeptanzkriteriumBinder.forField(akzeptanzkriteriumId).bind("id");
+        idCol.setEditorComponent(akzeptanzkriteriumId);
+        akzeptanzkriteriumEditor.addCloseListener(e -> {
+            this.fachfunktion.getAkzeptanzkriterien().add(e.getItem());
+        });
+        TextField akzeptanzkriteriumBeschreibung = new TextField();
+        akzeptanzkriteriumBinder.forField(akzeptanzkriteriumBeschreibung).bind("beschreibung");
+        beschreibungCol.setEditorComponent(akzeptanzkriteriumBeschreibung);
 
+        akzeptanzkriteriumGrid.addItemDoubleClickListener(e -> {
+            akzeptanzkriteriumEditor.editItem(e.getItem());
+            Component editorComponent = e.getColumn().getEditorComponent();
+            if (editorComponent instanceof Focusable<?>) {
+                ((Focusable) editorComponent).focus();
+            }
+        });
 
+        Button save = new Button("Speichern", new Icon(VaadinIcon.FILE));
+        save.addClickListener(e -> {
+           if (this.isNew) {
+               Result<Fachfunktion, String> r = this.workflow.speicherNeueFachfunktion(this.fachfunktion);
+               if (r.hasFailure() && r.getFailure().isPresent()) {
+                   Notification notification = Notification
+                           .show(r.getFailure().get(), 10000, Notification.Position.TOP_END);
+               }
+           } else {
+               //FachfunktionUpdateCommand updateCommand = new FachfunktionUpdateCommand();
+               //this.workflow.updateFachfunktion();
+           }
+        });
+        Button cancel = new Button("Abbrechen", new Icon(VaadinIcon.CLOSE));
+        Button back2 = new Button("Zurück", new Icon(VaadinIcon.ARROW_LEFT));
+        back2.addClickListener(e -> {
+            back2.getUI().ifPresent(
+                    ui -> ui.navigate(FachfunktionListView.class)
+            );
+        });
+        HorizontalLayout buttonGroup = new HorizontalLayout(save, cancel, back2);
+        formLayout.add(this.id, name, beschreibung, this.akzeptanzkriteriumGrid, buttonGroup);
         this.add(back, formLayout);
     }
 

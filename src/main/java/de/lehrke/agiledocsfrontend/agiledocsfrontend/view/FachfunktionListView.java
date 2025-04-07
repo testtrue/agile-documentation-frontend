@@ -76,6 +76,8 @@ public class FachfunktionListView extends Main {
 
     private static final SerializableBiConsumer<Div, Fachfunktion> tagComponentList = (
             span, fachfunktion) -> {
+        if (fachfunktion.getTags() == null) { return ;}
+
         fachfunktion.getTags().forEach(t -> {Span s = new Span(t);
             s.getStyle().set("background-color", "lightgray");
             s.getStyle().set("margin", "1rem");

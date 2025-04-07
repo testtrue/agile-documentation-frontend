@@ -8,6 +8,7 @@ import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.FachfunktionId
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Projekt;
 import lombok.Data;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -40,20 +41,20 @@ public class Workflow {
             return Results.failure("Keine Fachfunktion angegeben");
         }
 
-        if (fachfunktion.getId() == null) {
+        if (!StringUtils.hasText(fachfunktion.getId().id())) {
             return Results.failure("Fachfunktion hat keine ID erhalten");
         }
 
-        if (fachfunktion.getName() == null) {
+        if (!StringUtils.hasText(fachfunktion.getName())) {
             return Results.failure("Fachfunktion ohne Name kann nicht gespeichert werden");
         }
 
         if (fachfunktion.getAkzeptanzkriterien() == null || fachfunktion.getAkzeptanzkriterien().isEmpty() ) {
-            return Results.failure("Ohne Akzeptanzkriterien kann nicht gespeichert");
+            return Results.failure("Ohne Akzeptanzkriterien kann nicht gespeichert werden");
         }
 
         if (fachfunktion.getBeschreibung() == null || fachfunktion.getBeschreibung().isEmpty() ) {
-            return Results.failure("Ohne Beschreibung kann nicht gespeichert");
+            return Results.failure("Ohne Beschreibung kann nicht gespeichert werden");
         }
 
         this.fachfunktionRepository.saveFachfunktion(fachfunktion);
