@@ -22,7 +22,7 @@ public class Workflow {
 
     public Result<Fachfunktion, String> neueFachfunktion(String projectId) {
         final FachfunktionId latestId = this.findLatestId(new Projekt().withId(projectId));
-        return Results.success(new Fachfunktion().withId(latestId).withAkzeptanzkriterien(new ArrayList<>()));
+        return Results.success(new Fachfunktion().withId(latestId).withAkzeptanzkriterien(new ArrayList<>()).withTags(new ArrayList<>()));
     }
 
     public Result<Fachfunktion, String> neueFachfunktion(Projekt projectId) {
