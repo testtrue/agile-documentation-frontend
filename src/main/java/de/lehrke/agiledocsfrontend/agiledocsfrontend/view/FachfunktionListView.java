@@ -79,8 +79,7 @@ public class FachfunktionListView extends Main {
         if (fachfunktion.getTags() == null) { return ;}
 
         fachfunktion.getTags().forEach(t -> {Span s = new Span(t);
-            s.getStyle().set("background-color", "lightgray");
-            s.getStyle().set("margin", "1rem");
+            s.getElement().getThemeList().add("badge pill");
             span.add(s);
         });
     };

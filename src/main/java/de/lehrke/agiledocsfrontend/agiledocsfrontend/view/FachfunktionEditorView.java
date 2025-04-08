@@ -4,10 +4,13 @@ import com.leakyabstractions.result.api.Result;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.editor.Editor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -37,6 +40,7 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
 
     private static final String ID_PLACEHOLDER = "--plus--";
     private final FachfunktionRepository repository;
+    private final FachfunktionQueries queries;
     private final Workflow workflow;
     private Fachfunktion fachfunktion;
     private FachfunktionUpdateCommand fachfunktionUpdateCommand;
@@ -45,10 +49,12 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
     private TextField id;
     private Grid<AkzeptanzkriteriumUpdateCommand> akzeptanzkriteriumGrid;
     private Editor<AkzeptanzkriteriumUpdateCommand> akzeptanzkriteriumEditor;
+    private HorizontalLayout badges;
 
-    public FachfunktionEditorView(FachfunktionRepository repository, Workflow workflow) {
+    public FachfunktionEditorView(FachfunktionRepository repository, Workflow workflow, FachfunktionQueries queries) {
         this.repository = repository;
         this.workflow = workflow;
+        this.queries = queries;
 
         Button back = new Button("Zurück", new Icon(VaadinIcon.ARROW_LEFT));
         back.addClickListener(e -> {
@@ -156,14 +162,39 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
 
         });
         Button cancel = new Button("Abbrechen", new Icon(VaadinIcon.CLOSE));
+        cancel.addClickListener(e -> {
+            this.setParameter(null, this.fachfunktion.getId().id());
+        });
         Button back2 = new Button("Zurück", new Icon(VaadinIcon.ARROW_LEFT));
         back2.addClickListener(e -> {
             back2.getUI().ifPresent(
                     ui -> ui.navigate(FachfunktionListView.class)
             );
         });
+
+        this.badges = new HorizontalLayout();
+        badges.getStyle().set("flex-wrap", "wrap");
+        ComboBox<String> comboBox = new ComboBox<>("Tags");
+        comboBox.setAllowCustomValue(true);
+        comboBox.addCustomValueSetListener(e -> {
+            String customValue = e.getDetail();
+            List<String> items = new ArrayList<>(this.queries.getTags());
+            items.add(customValue);
+            comboBox.setItems(items);
+            comboBox.setValue(customValue);
+            this.fachfunktionUpdateCommand.tags().add(new TagUpdateCommand(customValue, Aktion.ADD));
+            this.fachfunktionUpdateCommand = this.fachfunktionUpdateCommand.withAktion(Aktion.UPDATE);
+        });
+        comboBox.setItems(this.queries.getTags());
+        comboBox.addValueChangeListener(e -> {
+            Span filterBadge = createFilterBadge(e.getValue());
+            badges.add(filterBadge);
+        });
+        VerticalLayout vl = new VerticalLayout();
+        vl.add(comboBox, badges);
+
         HorizontalLayout buttonGroup = new HorizontalLayout(save, cancel, back2);
-        formLayout.add(this.id, name, beschreibung, this.akzeptanzkriteriumGrid, buttonGroup);
+        formLayout.add(this.id, name, beschreibung, this.akzeptanzkriteriumGrid, vl ,buttonGroup);
         this.add(back, formLayout);
     }
 
@@ -197,5 +228,33 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
 
         this.binder.setBean(fachfunktion);
         this.akzeptanzkriteriumGrid.setItems(this.fachfunktionUpdateCommand.akzeptanzkriterien());
+        this.badges.getChildren().forEach(Component::removeFromParent);
+        this.fachfunktion.getTags().forEach(t -> this.badges.add(this.createFilterBadge(t)));
+    }
+
+    private Span createFilterBadge(String profession) {
+        Button clearButton = new Button(VaadinIcon.CLOSE_SMALL.create());
+        clearButton.addThemeVariants(ButtonVariant.LUMO_CONTRAST,
+                ButtonVariant.LUMO_TERTIARY_INLINE);
+        clearButton.getStyle().set("margin-inline-start",
+                "var(--lumo-space-xs)");
+        // Accessible button name
+        clearButton.getElement().setAttribute("aria-label",
+                "Clear filter: " + profession);
+        // Tooltip
+        clearButton.getElement().setAttribute("title",
+                "Clear filter: " + profession);
+
+        Span badge = new Span(new Span(profession), clearButton);
+        badge.getElement().getThemeList().add("badge contrast pill");
+
+        // Add handler for removing the badge
+        clearButton.addClickListener(event -> {
+            badge.getElement().removeFromParent();
+            this.fachfunktionUpdateCommand.tags().replaceAll(e -> e.tag().equals(profession) ? new TagUpdateCommand(e.tag(), Aktion.DELETE) : e );
+            this.fachfunktionUpdateCommand = this.fachfunktionUpdateCommand.withAktion(Aktion.UPDATE);
+        });
+
+        return badge;
     }
 }
