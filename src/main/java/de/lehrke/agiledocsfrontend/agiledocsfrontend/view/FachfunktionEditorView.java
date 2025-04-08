@@ -21,10 +21,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.router.BeforeEvent;
-import com.vaadin.flow.router.HasUrlParameter;
-import com.vaadin.flow.router.OptionalParameter;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.logic.*;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Akzeptanzkriterium;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Fachfunktion;
@@ -44,12 +41,12 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
     private final Workflow workflow;
     private Fachfunktion fachfunktion;
     private FachfunktionUpdateCommand fachfunktionUpdateCommand;
-    Binder<Fachfunktion> binder;
+    private final Binder<Fachfunktion> binder;
     private boolean isNew = true;
-    private TextField id;
-    private Grid<AkzeptanzkriteriumUpdateCommand> akzeptanzkriteriumGrid;
+    private final TextField id;
+    private final Grid<AkzeptanzkriteriumUpdateCommand> akzeptanzkriteriumGrid;
     private Editor<AkzeptanzkriteriumUpdateCommand> akzeptanzkriteriumEditor;
-    private HorizontalLayout badges;
+    private final HorizontalLayout badges;
 
     public FachfunktionEditorView(FachfunktionRepository repository, Workflow workflow, FachfunktionQueries queries) {
         this.repository = repository;
