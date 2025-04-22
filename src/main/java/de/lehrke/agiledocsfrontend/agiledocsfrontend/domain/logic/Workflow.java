@@ -53,7 +53,7 @@ public class Workflow {
             return Results.failure("Ohne Akzeptanzkriterien kann nicht gespeichert werden");
         }
 
-        if (fachfunktion.getBeschreibung() == null || fachfunktion.getBeschreibung().isEmpty() ) {
+        if (fachfunktion.getKurzbeschreibung() == null || fachfunktion.getKurzbeschreibung().isEmpty() ) {
             return Results.failure("Ohne Beschreibung kann nicht gespeichert werden");
         }
 
@@ -86,8 +86,8 @@ public class Workflow {
                 processAkzeptanzkriterienUpdates(fachfunktion)
         );
 
-        if (!fachfunktion.getBeschreibung().equals(fachfunktionUpdateCommand.beschreibung())) {
-            fachfunktion.setBeschreibung(fachfunktionUpdateCommand.beschreibung());
+        if (!fachfunktion.getKurzbeschreibung().equals(fachfunktionUpdateCommand.beschreibung())) {
+            fachfunktion.setKurzbeschreibung(fachfunktionUpdateCommand.beschreibung());
         }
 
         if (!fachfunktion.getName().equals(fachfunktionUpdateCommand.name())) {
@@ -118,13 +118,11 @@ public class Workflow {
             if (akzeptanzkriterienCommand.aktion() == Aktion.UPDATE) {
                 Optional<Akzeptanzkriterium> akzeptanzkriterium = fachfunktion.getAkzeptanzkriterien().stream().filter(a -> a.getId().equals(akzeptanzkriterienCommand.id())).findFirst();
                 akzeptanzkriterium.ifPresent(
-                        a -> {
-                            a.setBeschreibung(akzeptanzkriterienCommand.beschreibung());
-                        }
+                        a -> a.setBeschreibung(akzeptanzkriterienCommand.kurzbeschreibung())
                 );
             }
             if (akzeptanzkriterienCommand.aktion() == Aktion.ADD) {
-                fachfunktion.getAkzeptanzkriterien().add(new Akzeptanzkriterium().withId(akzeptanzkriterienCommand.id()).withBeschreibung(akzeptanzkriterienCommand.beschreibung()));
+                fachfunktion.getAkzeptanzkriterien().add(new Akzeptanzkriterium().withId(akzeptanzkriterienCommand.id()).withBeschreibung(akzeptanzkriterienCommand.kurzbeschreibung()));
             }
         };
     }

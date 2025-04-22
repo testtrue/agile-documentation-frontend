@@ -14,7 +14,7 @@ class FachfunktionTest {
         // WHEN
         final FachfunktionId fachfunktionId = FachfunktionId.of(projectId, id);
         // THEN
-        Assertions.assertEquals("FF_PROJ_00001" , fachfunktionId.id());
+        Assertions.assertEquals("FF-PROJ-00001" , fachfunktionId.id());
         Assertions.assertDoesNotThrow(() -> new FachfunktionId(fachfunktionId.id()));
     }
 }

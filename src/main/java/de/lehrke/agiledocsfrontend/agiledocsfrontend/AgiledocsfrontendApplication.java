@@ -19,8 +19,8 @@ public class AgiledocsfrontendApplication {
 
 	@PostConstruct
 	public void init() {
-		this.fachfunktionRepository.saveFachfunktion(new Fachfunktion().withId(new FachfunktionId("FF_PROJ_00001")).withName("Test").withBeschreibung("Dies ist ein Test").withTags(List.of("Test")).withAkzeptanzkriterien(List.of()));
-		this.fachfunktionRepository.saveFachfunktion(new Fachfunktion().withId(new FachfunktionId("FF_PROX_00002")).withName("Test2").withBeschreibung("Dies ist ein Test2").withTags(List.of("Test2", "Test3")).withAkzeptanzkriterien(List.of(new Akzeptanzkriterium().withBeschreibung("Testakzeptanz").withId("01"))));
+		this.fachfunktionRepository.saveFachfunktion(new Fachfunktion().withId(new FachfunktionId("FF-PROX-00001")).withName("Test").withKurzbeschreibung("Dies ist ein Test").withTags(List.of("Test")).withAkzeptanzkriterien(List.of()));
+		this.fachfunktionRepository.saveFachfunktion(new Fachfunktion().withId(new FachfunktionId("FF-PROX-00002")).withName("Test2").withKurzbeschreibung("Dies ist ein Test2").withTags(List.of("Test2", "Test3")).withAkzeptanzkriterien(List.of(new Akzeptanzkriterium().withBeschreibung("Testakzeptanz").withId("01"))));
 	}
 
 	public static void main(String[] args) {

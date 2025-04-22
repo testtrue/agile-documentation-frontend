@@ -9,14 +9,14 @@ import lombok.*;
 @EqualsAndHashCode()
 public class AkzeptanzkriteriumUpdateCommand {
     private String id;
-    private String beschreibung;
+    private String kurzbeschreibung;
     private Aktion aktion;
 
     public String id() {
         return id;
     }
-    public String beschreibung() {
-        return beschreibung;
+    public String kurzbeschreibung() {
+        return kurzbeschreibung;
     }
 
     public Aktion aktion() {

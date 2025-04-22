@@ -19,7 +19,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.*;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.logic.*;
@@ -54,11 +53,9 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
         this.queries = queries;
 
         Button back = new Button("Zurück", new Icon(VaadinIcon.ARROW_LEFT));
-        back.addClickListener(e -> {
-            back.getUI().ifPresent(
-                    ui -> ui.navigate(FachfunktionListView.class)
-            );
-        });
+        back.addClickListener(e -> back.getUI().ifPresent(
+                ui -> ui.navigate(FachfunktionListView.class)
+        ));
 
         FormLayout formLayout = new FormLayout();
         formLayout.setResponsiveSteps(
@@ -92,12 +89,12 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
                 }
 
         )).setHeader("ID").setAutoWidth(true);
-        Grid.Column<AkzeptanzkriteriumUpdateCommand> beschreibungCol = this.akzeptanzkriteriumGrid.addColumn(AkzeptanzkriteriumUpdateCommand::beschreibung).setHeader("Beschreibung");
+        Grid.Column<AkzeptanzkriteriumUpdateCommand> beschreibungCol = this.akzeptanzkriteriumGrid.addColumn(AkzeptanzkriteriumUpdateCommand::kurzbeschreibung).setHeader("Beschreibung");
 
         binder = new Binder<>(Fachfunktion.class);
         binder.addValueChangeListener(e -> this.fachfunktionUpdateCommand = this.fachfunktionUpdateCommand.withAktion(Aktion.UPDATE));
         binder.forField(name).bind("name");
-        binder.forField(beschreibung).bind("beschreibung");
+        binder.forField(beschreibung).bind("kurzbeschreibung");
 
 
         Binder<AkzeptanzkriteriumUpdateCommand> akzeptanzkriteriumBinder = new Binder<>(AkzeptanzkriteriumUpdateCommand.class);
@@ -108,7 +105,7 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
         idCol.setEditorComponent(akzeptanzkriteriumId);
 
         TextField akzeptanzkriteriumBeschreibung = new TextField();
-        akzeptanzkriteriumBinder.forField(akzeptanzkriteriumBeschreibung).bind(AkzeptanzkriteriumUpdateCommand::getBeschreibung, AkzeptanzkriteriumUpdateCommand::setBeschreibung);
+        akzeptanzkriteriumBinder.forField(akzeptanzkriteriumBeschreibung).bind(AkzeptanzkriteriumUpdateCommand::getKurzbeschreibung, AkzeptanzkriteriumUpdateCommand::setKurzbeschreibung);
         beschreibungCol.setEditorComponent(akzeptanzkriteriumBeschreibung);
 
         akzeptanzkriteriumGrid.addItemDoubleClickListener(e -> {
@@ -121,7 +118,7 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
             this.akzeptanzkriteriumEditor.editItem(e.getItem());
             Component editorComponent = e.getColumn().getEditorComponent();
             if (editorComponent instanceof Focusable<?>) {
-                ((Focusable) editorComponent).focus();
+                ((Focusable<?>) editorComponent).focus();
             }
         });
 
@@ -134,15 +131,15 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
 
         Button save = new Button("Speichern", new Icon(VaadinIcon.FILE));
         save.addClickListener(e -> {
-            Result<Fachfunktion, String> r = null;
+            Result<Fachfunktion, String> r;
            if (this.isNew) {
                r = this.workflow.speicherNeueFachfunktion(this.fachfunktion
-                       .withAkzeptanzkriterien(this.fachfunktionUpdateCommand.akzeptanzkriterien().stream().filter(a -> !ID_PLACEHOLDER.equals(a.getId())).map(a -> new Akzeptanzkriterium(a.id(), a.beschreibung())).toList())
+                       .withAkzeptanzkriterien(this.fachfunktionUpdateCommand.akzeptanzkriterien().stream().filter(a -> !ID_PLACEHOLDER.equals(a.getId())).map(a -> new Akzeptanzkriterium(a.id(), a.kurzbeschreibung())).toList())
                        .withTags(this.fachfunktionUpdateCommand.tags().stream().map(TagUpdateCommand::tag).toList())
                );
            } else {
                r = this.workflow.updateFachfunktion(this.fachfunktionUpdateCommand
-                       .withBeschreibung(this.fachfunktion.getBeschreibung())
+                       .withBeschreibung(this.fachfunktion.getKurzbeschreibung())
                        .withName(this.fachfunktion.getName()));
            }
 
@@ -159,15 +156,11 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
 
         });
         Button cancel = new Button("Abbrechen", new Icon(VaadinIcon.CLOSE));
-        cancel.addClickListener(e -> {
-            this.setParameter(null, this.fachfunktion.getId().id());
-        });
+        cancel.addClickListener(e -> this.setParameter(null, this.fachfunktion.getId().id()));
         Button back2 = new Button("Zurück", new Icon(VaadinIcon.ARROW_LEFT));
-        back2.addClickListener(e -> {
-            back2.getUI().ifPresent(
-                    ui -> ui.navigate(FachfunktionListView.class)
-            );
-        });
+        back2.addClickListener(e -> back2.getUI().ifPresent(
+                ui -> ui.navigate(FachfunktionListView.class)
+        ));
 
         this.badges = new HorizontalLayout();
         badges.getStyle().set("flex-wrap", "wrap");
@@ -215,7 +208,7 @@ public class FachfunktionEditorView extends VerticalLayout implements HasUrlPara
         this.fachfunktionUpdateCommand = new FachfunktionUpdateCommand(
                                                     this.fachfunktion.getId(),
                                                     this.fachfunktion.getName(),
-                                                    this.fachfunktion.getBeschreibung(),
+                                                    this.fachfunktion.getKurzbeschreibung(),
                                                     akzeptanzkriteriumUpdateCommandList,
                                                     new ArrayList<>(this.fachfunktion.getTags().stream()
                                                             .map(t ->

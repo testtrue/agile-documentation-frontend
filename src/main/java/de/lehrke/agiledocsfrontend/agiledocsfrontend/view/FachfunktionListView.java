@@ -49,7 +49,7 @@ public class FachfunktionListView extends Main {
             boolean matchesId = matchesTerm(fachfunktion.getId().id(),
                     searchTerm);
             boolean matchesName = matchesTerm(fachfunktion.getName(), searchTerm);
-            boolean matchesBeschreibung = matchesTerm(fachfunktion.getBeschreibung(), searchTerm);
+            boolean matchesBeschreibung = matchesTerm(fachfunktion.getKurzbeschreibung(), searchTerm);
             boolean matchesTag = fachfunktion.getTags().stream().anyMatch(t -> matchesTerm(t, searchTerm));
 
             return matchesId || matchesName || matchesBeschreibung || matchesTag;
@@ -58,13 +58,15 @@ public class FachfunktionListView extends Main {
         HorizontalLayout verticalLayout = new HorizontalLayout();
 
         Button newFF = new Button("Neu", new Icon(VaadinIcon.PLUS));
-        newFF.addClickListener(e -> {
-            newFF.getUI().ifPresent(
-                    ui -> ui.navigate(FachfunktionEditorView.class)
-            );
-        });
+        newFF.addClickListener(e -> newFF.getUI().ifPresent(
+                ui -> ui.navigate(FachfunktionEditorView.class)
+        ));
+        Button importExport = new Button("Import/Export", new Icon(VaadinIcon.FILE));
+        importExport.addClickListener(e -> importExport.getUI().ifPresent(
+                ui -> ui.navigate(FileView.class)
+        ));
 
-        verticalLayout.add(searchField, newFF);
+        verticalLayout.add(searchField, newFF, importExport);
 
         this.add(verticalLayout);
         this.add(fachfunktionGrid);
@@ -90,11 +92,9 @@ public class FachfunktionListView extends Main {
 
     private static final SerializableBiConsumer<Div, Fachfunktion> editCol = (d, f) -> {
         Button b = new Button("Edit", new Icon(VaadinIcon.EDIT));
-        b.addClickListener(e -> {
-            b.getUI().ifPresent(
-                    ui -> ui.navigate(FachfunktionEditorView.class, f.getId().id())
-            );
-        });
+        b.addClickListener(e -> b.getUI().ifPresent(
+                ui -> ui.navigate(FachfunktionEditorView.class, f.getId().id())
+        ));
         d.add(b);
     };
 

@@ -15,7 +15,7 @@ public class Fachfunktion {
     private FachfunktionId id;
     private Projekt projekt;
     private String name;
-    private String beschreibung;
+    private String kurzbeschreibung;
     private List<Akzeptanzkriterium> akzeptanzkriterien;
     private List<String> tags;
 
