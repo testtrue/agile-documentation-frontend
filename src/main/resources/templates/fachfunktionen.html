@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <title>Fachfunktionen</title>
+</head>
+<body>
+<section layout:fragment="content">
+    <div>
+        <button>Import/Export</button>
+    </div>
+    <table class="table table-striped">
+        <caption>
+            <button type="button" class="btn btn-primary">Neue Fachfunktion</button>
+        </caption>
+        <thead>
+        <tr class="row">
+            <th class="col-1">ID</th>
+            <th class="col">Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="row" th:each="fachfunktion : ${fachfunktionen}">
+            <td class="col-1" th:text="${fachfunktion.getId().id()}"></td>
+            <td class="col" th:text="${fachfunktion.getName()}"></td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>

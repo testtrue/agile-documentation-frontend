@@ -3,7 +3,7 @@ package de.lehrke.agiledocsfrontend.agiledocsfrontend;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Akzeptanzkriterium;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.Fachfunktion;
 import de.lehrke.agiledocsfrontend.agiledocsfrontend.domain.model.FachfunktionId;
-import de.lehrke.agiledocsfrontend.agiledocsfrontend.persistence.jpa.H2Repository;
+import de.lehrke.agiledocsfrontend.agiledocsfrontend.persistence.jpa.H2FFRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +15,7 @@ import java.util.List;
 public class AgiledocsfrontendApplication {
 
 	@Autowired
-	private H2Repository fachfunktionRepository;
+	private H2FFRepository fachfunktionRepository;
 
 	@PostConstruct
 	public void init() {

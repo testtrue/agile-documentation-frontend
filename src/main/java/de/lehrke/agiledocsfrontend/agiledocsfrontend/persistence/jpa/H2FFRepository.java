@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface H2Repository extends JpaRepository<FachfunktionDbo, String>, FachfunktionRepository {
+public interface H2FFRepository extends JpaRepository<FachfunktionDbo, String>, FachfunktionRepository {
     default int findLastIdByProjectId(String projectId) {
         return this.findByIdContains(projectId).size();
     }
